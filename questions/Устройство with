@@ -1,0 +1,100 @@
+Синтаксис:
+"with" expression ["as" target] ("," expression ["as" target])* ":"
+    suite
+
+
+Context manager - любой объект, у которого есть методы:
+object.__enter__()
+object.__exit__(exc_type, exc_value, traceback)
+
+Как работает with:
+Сначала вызывается метод __enter__(), и то, что он вернул, сохраняется в     переменную. Определяет, что должен сделать менеджер контекста в начале блока, созданного оператором with. Заметьте, что возвращаемое __enter__ значение и есть то значение, с которым производится работа внутри with.
+Вне зависимости, произошло исключение или нет, в конце работы ВСЕГДА вызывается __exit__(). Определяет действия контекстного менеджера после того, как блок будет выполнен (или прерван во время работы). Может использоваться для контролирования исключений, чистки, любых действий, которые должны быть выполнены незамедлительно после блока внутри with. Если блок выполнен успешно,  в exception_type, exception_value и traceback будет установлен None.
+Если исключение было, то передаётся инфа о нём.
+Eсли не было, то __exit__(None, None, None)
+В случае работы с файлами __enter__() возвращает сам объект, описывающий файл, и этот объект сохраняется в переменную VAR (синтаксис ‘with EXPR as VAR: Block’), а метод __exit__() закрывает файл.	
+
+
+with A() as a, B() as b: 
+    suite  # эквивалентно:
+with A() as a:
+    with B() as b: 
+        suite 
+
+
+
+with EXPR as VAR:
+    BLOCK  # эквивалентно:
+mgr = (EXPR)
+exit = mgr.__exit__
+value = mgr.__enter__()
+no_exc = True
+try:
+    try:
+        VAR = value
+	 BLOCK
+    except:
+	 no_exc = False
+	 if not exit(*sys.exc_info()):  # если mgr не смог обработать, exit вернет False
+	     raise
+finally:
+    if no_exc:
+	 exit(None, None, None) 
+
+
+Объекты, являющиеся менеджерами контекста (поддерживающие with):
+file (open(...))
+socket (socket.socket(...))
+http.client.HTTPResponse(urllib.request.urlopen(...))
+
+
+Как сделать поддержку with для собственного объекта:
+Определить методы __enter__() && __exit__() по правилам
+Воспользоваться модулем .contextlib
+
+
+@contextlib.contextmanager - Декоратор
+
+from contextlib import contextmanager
+
+@contextmanager
+def tag(name):
+	print "<%s>" % name
+	yield
+	print "</%s>" % name
+
+with tag("h1"):
+	    print "foo"
+Вывод:
+<h1>
+foo
+</h1>
+
+
+
+class File:
+    def __init__(self, filename, method):
+        self.file_obj = open(filename, method)
+
+    def __enter__(self):
+        return self.file_obj
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.file_obj.close()
+
+
+with File('example.txt', 'w') as file:
+    file.write('Hello')
+
+
+
+from contextlib import contextmanager
+
+@contextmanager
+def my_open(obj, path, mode):
+    file = open(path, mode)  # аналог __enter__
+    yield file
+    if file:
+        file.close()	# аналог __exit__
+
+
