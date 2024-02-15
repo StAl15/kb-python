@@ -1,2 +1,1 @@
-a = bytes(10101)
-print(a)
+a = complex(1.2)
