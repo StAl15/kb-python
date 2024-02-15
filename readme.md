@@ -13,7 +13,7 @@
   readline, select, selectors, signal, socket, struct, subprocess, sys,
   this, threading, time, timeit, unicodedata, unittest, unittest.mock,
   weakref
-Список вопросов
+Список вопросов  
 1. Базовые структуры данных.
 Встроенные типы данных. Оценка сложности базовых операций. Примеры
 уместного использования. Мутабельность и хешируемость. Структуры
