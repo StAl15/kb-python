@@ -12,7 +12,7 @@
   json, logging, mmap, multiprocessing, os, os.path, pdb, pickle, re,
   readline, select, selectors, signal, socket, struct, subprocess, sys,
   this, threading, time, timeit, unicodedata, unittest, unittest.mock,
-  weakref
+  weakref  
 Список вопросов  
 1. Базовые структуры данных.
 Встроенные типы данных. Оценка сложности базовых операций. Примеры
